@@ -421,14 +421,23 @@ THE SOFTWARE.
         function showTooltip(entry, event) {
 
             if (entry.tooltip) {
+                var width = element.clientWidth,
+                    height = element.clientHeight,
+                    tooltipWidth = tooltip.clientWidth,
+                    offsetOver = 0,
+                    offsetX = 0.1 || settings.tooltipOffsetX,
+                    offsetY = 0.1 || settings.tooltipOffsetY;
                 tooltip.style.visibility = 'visible'
                 // tooltip.setAttribute('x', entry.vector2D.x - settings.tooltipDiffX);
                 // tooltip.setAttribute('y', entry.vector2D.y - settings.tooltipDiffY);
                 // var tooltip = document.getElementById('3d-word-tooltip');
                 tooltip.style.position = 'absolute';
-                tooltip.style.left = event.offsetX + 'px';
-                tooltip.style.top = event.offsetY + 15 + 'px';
-                tooltip.style.maxWidth = '200px';
+                if (tooltipWidth > width - event.offsetX || width - event.offsetX < tooltipWidth - event.offsetX) {
+                    offsetOver = - tooltipWidth / 2
+                }
+                tooltip.style.left = event.offsetX + offsetOver - tooltipWidth / 2 + offsetX + 'px';
+                tooltip.style.top = event.offsetY + 15 + offsetY + 'px';
+                // tooltip.style.maxWidth = '200px';
                 tooltip.style.borderRadius = '5px';
                 tooltip.style.padding = '5px 8px'
                 tooltip.style.zIndex = 999;
