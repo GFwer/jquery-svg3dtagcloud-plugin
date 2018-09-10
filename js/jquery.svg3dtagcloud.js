@@ -721,7 +721,9 @@ THE SOFTWARE.
     };
 
     window.SVG3DTagCloud = SVG3DTagCloud;
-    module.exports = SVG3DTagCloud;
+    if (typeof module !== `undefined` && typeof exports === `object`) {
+        module.exports = SVG3DTagCloud;
+    }
 }());
 
 if (typeof jQuery !== 'undefined') {
