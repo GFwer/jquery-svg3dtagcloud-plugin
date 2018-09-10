@@ -20,9 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-( function() {
+(function () {
 
-    function SVG3DTagCloud( element, params ) {
+    function SVG3DTagCloud(element, params) {
 
         var settings = {
 
@@ -41,6 +41,8 @@ THE SOFTWARE.
             fontFamily: 'Arial, sans-serif',
             fontSize: '15',
             fontColor: '#fff',
+            linkClass: '',
+            hover: false,
             fontWeight: 'normal',//bold
             fontStyle: 'normal',//italic 
             fontStretch: 'normal',//wider, narrower, ultra-condensed, extra-condensed, condensed, semi-condensed, semi-expanded, expanded, extra-expanded, ultra-expanded
@@ -56,20 +58,23 @@ THE SOFTWARE.
             tooltipDiffX: 0,
             tooltipDiffY: 10,
             animatingSpeed: 0.01,
-            animatingRadiusLimit: 1.3
+            animatingRadiusLimit: 1.3,
+            formatter: function (label) {
+                return label.tooltipLabel
+            }
 
         };
-            
-        //---
-
-        if ( params !== undefined )
-            for ( var prop in params )
-                if ( params.hasOwnProperty( prop ) && settings.hasOwnProperty( prop ) )
-                    settings[ prop ] = params[ prop ];
 
         //---
 
-        if ( !settings.entries.length )
+        if (params !== undefined)
+            for (var prop in params)
+                if (params.hasOwnProperty(prop) && settings.hasOwnProperty(prop))
+                    settings[prop] = params[prop];
+
+        //---
+
+        if (!settings.entries.length)
             return false;
 
         //---
@@ -99,49 +104,49 @@ THE SOFTWARE.
 
         var animFrameId;
         var radius_factor = 1;
-        
+
         //---
 
         function destroy() {
-            window.cancelAnimFrame( animFrameId );
-            window.removeEventListener( 'resize', resizeHandler );
-            if(bg){
-                svg.removeChild( bg );
+            window.cancelAnimFrame(animFrameId);
+            window.removeEventListener('resize', resizeHandler);
+            if (bg) {
+                svg.removeChild(bg);
             }
-            if(svg){
-                element.removeChild( svg );
-                svg.removeEventListener( 'mousemove', mouseMoveHandler );
+            if (svg) {
+                element.removeChild(svg);
+                svg.removeEventListener('mousemove', mouseMoveHandler);
                 delete svg;
             }
         }
 
         function init() {
 
-            svg = document.createElementNS( svgNS, 'svg' );
-            svg.addEventListener( 'mousemove', mouseMoveHandler );
+            svg = document.createElementNS(svgNS, 'svg');
+            svg.addEventListener('mousemove', mouseMoveHandler);
 
-            element.appendChild( svg );
+            element.appendChild(svg);
 
-            if ( settings.bgDraw ) {
-        
-                bg = document.createElementNS( svgNS, 'rect' );
-                bg.setAttribute( 'x', 0 );
-                bg.setAttribute( 'y', 0 );
-                bg.setAttribute( 'fill', settings.bgColor );
+            if (settings.bgDraw) {
 
-                svg.appendChild( bg );
+                bg = document.createElementNS(svgNS, 'rect');
+                bg.setAttribute('x', 0);
+                bg.setAttribute('y', 0);
+                bg.setAttribute('fill', settings.bgColor);
+
+                svg.appendChild(bg);
 
             }
 
             //---
-            
+
             addEntries();
             reInit();
             animloop();
 
             //---
 
-            window.addEventListener( 'resize', resizeHandler );
+            window.addEventListener('resize', resizeHandler);
 
         };
 
@@ -153,22 +158,22 @@ THE SOFTWARE.
             var svgWidth = windowWidth;
             var svgHeight = windowHeight;
 
-            if ( settings.width.toString().indexOf( '%' ) > 0 || settings.height.toString().indexOf( '%' ) > 0 ) {
+            if (settings.width.toString().indexOf('%') > 0 || settings.height.toString().indexOf('%') > 0) {
 
-                svgWidth = Math.round( element.offsetWidth / 100 * parseInt( settings.width ) );
-                svgHeight = Math.round( svgWidth / 100 * parseInt( settings.height ) );
+                svgWidth = Math.round(element.offsetWidth / 100 * parseInt(settings.width));
+                svgHeight = Math.round(svgWidth / 100 * parseInt(settings.height));
 
             } else {
 
-                svgWidth = parseInt( settings.width );
-                svgHeight = parseInt( settings.height );
+                svgWidth = parseInt(settings.width);
+                svgHeight = parseInt(settings.height);
 
             }
 
-            if ( windowWidth <= svgWidth )
+            if (windowWidth <= svgWidth)
                 svgWidth = windowWidth;
 
-            if ( windowHeight <= svgHeight )
+            if (windowHeight <= svgHeight)
                 svgHeight = windowHeight;
 
             //---
@@ -178,17 +183,17 @@ THE SOFTWARE.
             speed.x = settings.speed / center2D.x;
             speed.y = settings.speed / center2D.y;
 
-            if ( svgWidth >= svgHeight )
-                diameter = svgHeight / 100 * parseInt( settings.radius );
+            if (svgWidth >= svgHeight)
+                diameter = svgHeight / 100 * parseInt(settings.radius);
             else
-                diameter = svgWidth / 100 * parseInt( settings.radius );
+                diameter = svgWidth / 100 * parseInt(settings.radius);
 
-            if ( diameter < 1 )
+            if (diameter < 1)
                 diameter = 1;
 
             radius = diameter / 2;
 
-            if ( radius < settings.radiusMin ) {
+            if (radius < settings.radiusMin) {
 
                 radius = settings.radiusMin;
                 diameter = radius * 2;
@@ -197,41 +202,41 @@ THE SOFTWARE.
 
             //---
 
-            svg.setAttribute( 'width', svgWidth );
-            svg.setAttribute( 'height', svgHeight );
+            svg.setAttribute('width', svgWidth);
+            svg.setAttribute('height', svgHeight);
 
-            if ( settings.bgDraw ) {
+            if (settings.bgDraw) {
 
-                bg.setAttribute( 'width', svgWidth );
-                bg.setAttribute( 'height', svgHeight );
+                bg.setAttribute('width', svgWidth);
+                bg.setAttribute('height', svgHeight);
 
             }
 
             //---
 
-            setEntryPositions( radius * radius_factor );
+            setEntryPositions(radius * radius_factor);
 
         };
 
         //---
 
-        function setEntryPositions( radius ) {
+        function setEntryPositions(radius) {
 
-            for ( var i = 0, l = entryHolder.length; i < l; i++ ) {
+            for (var i = 0, l = entryHolder.length; i < l; i++) {
 
-                setEntryPosition( entryHolder[ i ], radius );
+                setEntryPosition(entryHolder[i], radius);
 
             }
 
         };
 
-        function setEntryPosition( entry, radius ) {
+        function setEntryPosition(entry, radius) {
 
             var dx = entry.vectorPosition.x - center3D.x;
             var dy = entry.vectorPosition.y - center3D.y;
             var dz = entry.vectorPosition.z - center3D.z;
 
-            var length = Math.sqrt( dx * dx + dy * dy + dz * dz );
+            var length = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
             entry.vectorPosition.x /= length;
             entry.vectorPosition.y /= length;
@@ -243,128 +248,142 @@ THE SOFTWARE.
 
         };
 
-        function addEntry( index, entryObj, x, y, z ) {
-            
+        function addEntry(index, entryObj, x, y, z) {
             var entry = {};
 
-                if ( typeof entryObj.label != 'undefined' ) {
+            if (typeof entryObj.label != 'undefined') {
 
-                    entry.element = document.createElementNS( svgNS, 'text' );
-                    entry.element.setAttribute( 'x', 0 );
-                    entry.element.setAttribute( 'y', 0 );
-                    entry.element.setAttribute( 'fill', settings.fontColor );
-                    entry.element.setAttribute( 'font-family', settings.fontFamily );
-                    entry.element.setAttribute( 'font-size', entryObj.fontSize ? entryObj.fontSize : settings.fontSize );
-                    entry.element.setAttribute( 'font-weight', settings.fontWeight );
-                    entry.element.setAttribute( 'font-style', settings.fontStyle );
-                    entry.element.setAttribute( 'font-stretch', settings.fontStretch );
-                    entry.element.setAttribute( 'text-anchor', 'middle' );
-                    entry.element.textContent = settings.fontToUpperCase ? entryObj.label.toUpperCase() : entryObj.label;
-
-                } else if ( typeof entryObj.image != 'undefined' ) {
-
-                    entry.element = document.createElementNS( svgNS, 'image' );
-                    entry.element.setAttribute( 'x', 0 );
-                    entry.element.setAttribute( 'y', 0 );
-                    entry.element.setAttribute( 'width', entryObj.width );
-                    entry.element.setAttribute( 'height', entryObj.height );
-                    entry.element.setAttribute( 'id', 'image_' + index );
-                    entry.element.setAttributeNS( 'http://www.w3.org/1999/xlink','href', entryObj.image );
-
-                    entry.diffX = entryObj.width / 2;
-                    entry.diffY = entryObj.height / 2;
-                    
-                }
-
-                entry.link = document.createElementNS( svgNS, 'a' );
-                entry.link.setAttributeNS( 'http://www.w3.org/1999/xlink', 'xlink:href', entryObj.url );
-                entry.link.setAttribute( 'target', entryObj.target );
-                entry.link.addEventListener( 'mouseover', mouseOverHandler, true );
-                entry.link.addEventListener( 'mouseout', mouseOutHandler, true );
-                entry.link.appendChild( entry.element );
-
-                if ( typeof entryObj.tooltip != 'undefined' ) {
-
-                    entry.tooltip = true;
-                    entry.tooltipLabel = settings.tooltipFontToUpperCase ? entryObj.tooltip.toUpperCase() : entryObj.tooltip;;
-
+                entry.element = document.createElementNS(svgNS, 'text');
+                entry.element.setAttribute('x', 0);
+                entry.element.setAttribute('y', 0);
+                if (typeof entryObj.fontColor != 'undefined') {
+                    entry.element.setAttribute('fill', entryObj.fontColor);
                 } else {
-
-                    entry.tooltip = false;
-
+                    entry.element.setAttribute('fill', settings.fontColor);
                 }
+                entry.element.setAttribute('font-family', settings.fontFamily);
+                entry.element.setAttribute('font-size', entryObj.fontSize ? entryObj.fontSize : settings.fontSize);
+                entry.element.setAttribute('font-weight', settings.fontWeight);
+                entry.element.setAttribute('font-style', settings.fontStyle);
+                entry.element.setAttribute('font-stretch', settings.fontStretch);
+                entry.element.setAttribute('text-anchor', 'middle');
+                entry.element.textContent = settings.fontToUpperCase ? entryObj.label.toUpperCase() : entryObj.label;
 
-                entry.index = index;
-                entry.mouseOver = false;
+            } else if (typeof entryObj.image != 'undefined') {
 
-                entry.vectorPosition = { x:x, y:y, z:z };
-                entry.vector2D = { x:0, y:0 };
+                entry.element = document.createElementNS(svgNS, 'image');
+                entry.element.setAttribute('x', 0);
+                entry.element.setAttribute('y', 0);
+                entry.element.setAttribute('width', entryObj.width);
+                entry.element.setAttribute('height', entryObj.height);
+                entry.element.setAttribute('id', 'image_' + index);
+                entry.element.setAttributeNS('http://www.w3.org/1999/xlink', 'href', entryObj.image);
 
-            svg.appendChild( entry.link );
-                
+                entry.diffX = entryObj.width / 2;
+                entry.diffY = entryObj.height / 2;
+
+            }
+
+            entry.link = document.createElementNS(svgNS, 'a');
+            entry.link.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', entryObj.url);
+            entry.link.setAttribute('target', entryObj.target);
+            if (settings.hover === true) {
+                entry.link.addEventListener('mouseover', mouseOverHandler, true);
+                entry.link.addEventListener('mouseout', mouseOutHandler, true);
+            }
+
+            entry.link.setAttribute('class', settings.linkClass)
+
+            entry.link.appendChild(entry.element);
+
+            if (typeof entryObj.tooltip != 'undefined') {
+
+                entry.tooltip = true;
+                entry.tooltipLabel = settings.tooltipFontToUpperCase ? entryObj.tooltip.toUpperCase() : entryObj.tooltip;;
+
+            } else {
+
+                entry.tooltip = false;
+
+            }
+
+            entry.index = index;
+            entry.mouseOver = false;
+
+            entry.vectorPosition = { x: x, y: y, z: z };
+            entry.vector2D = { x: 0, y: 0 };
+
+            svg.appendChild(entry.link);
+
             return entry;
-        
+
         };
 
         function addEntries() {
 
             var tooltip = false;
 
-            for ( var i = 1, l = settings.entries.length + 1; i < l; i++ ) {
+            for (var i = 1, l = settings.entries.length + 1; i < l; i++) {
 
-                var phi = Math.acos( -1 + ( 2 * i ) / l );
-                var theta = Math.sqrt( l * Math.PI ) * phi;
+                var phi = Math.acos(-1 + (2 * i) / l);
+                var theta = Math.sqrt(l * Math.PI) * phi;
 
-                var x = Math.cos( theta ) * Math.sin( phi );
-                var y = Math.sin( theta ) * Math.sin( phi );
-                var z = Math.cos( phi );
+                var x = Math.cos(theta) * Math.sin(phi);
+                var y = Math.sin(theta) * Math.sin(phi);
+                var z = Math.cos(phi);
 
-                var entry = addEntry( i - 1, settings.entries[ i - 1 ], x, y, z );
-                
-                entryHolder.push( entry );
+                var entry = addEntry(i - 1, settings.entries[i - 1], x, y, z);
 
-                if ( typeof settings.entries[ i - 1 ].tooltip != 'undefined' ) {
+                entryHolder.push(entry);
+
+                if (typeof settings.entries[i - 1].tooltip != 'undefined') {
 
                     tooltip = true;
 
                 }
-            
+
             }
 
-            if ( tooltip ) {
+            if (tooltip) {
 
                 addTooltip();
 
             }
-        
+
         };
 
         function addTooltip() {
 
-            tooltip = document.createElementNS( svgNS, 'text' );
-            tooltip.setAttribute( 'x', 0 );
-            tooltip.setAttribute( 'y', 0 );
-            tooltip.setAttribute( 'fill', settings.tooltipFontColor );
-            tooltip.setAttribute( 'font-family', settings.tooltipFontFamily );
-            tooltip.setAttribute( 'font-size', settings.tooltipFontSize );
-            tooltip.setAttribute( 'font-weight', settings.tooltipFontWeight );
-            tooltip.setAttribute( 'font-style', settings.tooltipFontStyle );
-            tooltip.setAttribute( 'font-stretch', settings.tooltipFontStretch );
-            tooltip.setAttribute( 'text-anchor', settings.tooltipTextAnchor );
+            tooltip = document.createElement('div');
+            tooltip.style.opacity = 0;
+
+            // tooltip.setAttribute('id', '0-asd');
+
+            // tooltip.setAttribute('x', 0);
+            // tooltip.setAttribute('y', 0);
+            // tooltip.setAttribute('padding',10);
+            // tooltip.setAttribute('transform','translate('+settings.tooltipFontSize * +')')
+            tooltip.style.color = settings.tooltipFontColor;
+            tooltip.style.fontFamily = settings.tooltipFontFamily;
+            tooltip.style.fontSize = settings.tooltipFontSize + 'px';
+            tooltip.style.fontWeight = settings.tooltipFontWeight;
+            tooltip.style.fontStyle = settings.tooltipFontStyle;
+            tooltip.style.fontStretch = settings.tooltipFontStretch;
+            tooltip.style.textAnchor = settings.tooltipTextAnchor;
             tooltip.textContent = '';
 
-            svg.appendChild( tooltip );
+            element.appendChild(tooltip);
 
         };
 
-        function getEntryByElement( element ) {
+        function getEntryByElement(element) {
 
-            for ( var i = 0, l = entryHolder.length; i < l; i++ ) {
+            for (var i = 0, l = entryHolder.length; i < l; i++) {
 
-                var entry = entryHolder[ i ];
+                var entry = entryHolder[i];
 
-                if ( entry.element.getAttribute( 'x' ) === element.getAttribute( 'x' ) && 
-                     entry.element.getAttribute( 'y' ) === element.getAttribute( 'y' ) ) {
+                if (entry.element.getAttribute('x') === element.getAttribute('x') &&
+                    entry.element.getAttribute('y') === element.getAttribute('y')) {
 
                     return entry;
 
@@ -376,73 +395,87 @@ THE SOFTWARE.
 
         };
 
-        function highlightEntry( entry ) {
+        function highlightEntry(entry) {
 
-            for ( var i = 0, l = entryHolder.length; i < l; i++ ) {
+            for (var i = 0, l = entryHolder.length; i < l; i++) {
 
-                var e = entryHolder[ i ];
+                var e = entryHolder[i];
 
-                if ( e.index === entry.index ) {
+                if (e.index === entry.index) {
 
-                    e.mouseOver = true; 
+                    e.mouseOver = true;
 
                 } else {
 
-                    e.mouseOver = false; 
+                    e.mouseOver = false;
 
                 }
-
-            } 
-
-        };
-
-        //---
-
-        function showTooltip( entry ) {
-
-            if ( entry.tooltip ) {
-
-                tooltip.setAttribute( 'x', entry.vector2D.x - settings.tooltipDiffX );
-                tooltip.setAttribute( 'y', entry.vector2D.y - settings.tooltipDiffY );
-
-                tooltip.textContent = settings.tooltipFontToUpperCase ? entry.tooltipLabel.toUpperCase() : entry.tooltipLabel;
-
-                tooltip.setAttribute( 'opacity', 1.0 );
 
             }
 
         };
 
-        function hideTooltip( entry ) {
+        //--
 
-            tooltip.setAttribute( 'opacity', 0.0 );
+        var formatter = settings.formatter;
+        function showTooltip(entry, event) {
+
+            if (entry.tooltip) {
+                tooltip.style.visibility = 'visible'
+                // tooltip.setAttribute('x', entry.vector2D.x - settings.tooltipDiffX);
+                // tooltip.setAttribute('y', entry.vector2D.y - settings.tooltipDiffY);
+                // var tooltip = document.getElementById('3d-word-tooltip');
+                tooltip.style.position = 'absolute';
+                tooltip.style.left = event.offsetX + 'px';
+                tooltip.style.top = event.offsetY + 15 + 'px';
+                tooltip.style.maxWidth = '200px';
+                tooltip.style.borderRadius = '5px';
+                tooltip.style.padding = '5px 8px'
+                tooltip.style.zIndex = 999;
+                tooltip.style.opacity = 0.8;
+                tooltip.style.background = '#1d1e28'
+                tooltip.style.transition = 'all ease .3s'
+                tooltip.innerHTML = formatter(entry);
+
+                // console.log()
+                // tooltip.setAttribute('transform', 'translate(' + (settings.tooltipFontSize * tooltip.textContent.length / -4) + ',-5)')
+                // tooltip.setAttribute('opacity', 1.0);
+
+            }
+
+        };
+
+        function hideTooltip(entry) {
+
+            tooltip.style.opacity = 0;
+            tooltip.style.visibility = 'hidden'
 
         };
 
         //---
-            
-        function render() { 
+
+        function render() {
 
             var fx = speed.x * mousePos.x - settings.speed;
             var fy = settings.speed - speed.y * mousePos.y;
-            
+
             var angleX = fx * MATHPI180;
             var angleY = fy * MATHPI180;
 
-            position.sx = Math.sin( angleX );
-            position.cx = Math.cos( angleX );
-            position.sy = Math.sin( angleY );
-            position.cy = Math.cos( angleY );
+            position.sx = Math.sin(angleX);
+            position.cx = Math.cos(angleX);
+            position.sy = Math.sin(angleY);
+            position.cy = Math.cos(angleY);
 
             //---
 
-            for ( var i = 0, l = entryHolder.length; i < l; i++ ) {
-    
-                var entry = entryHolder[ i ];
+            for (var i = 0, l = entryHolder.length; i < l; i++) {
+
+                var entry = entryHolder[i];
 
                 //---
 
-                if ( mouseReact ) {
+                if (mouseReact) {
 
                     var rx = entry.vectorPosition.x;
                     var rz = entry.vectorPosition.y * position.sy + entry.vectorPosition.z * position.cy;
@@ -455,14 +488,14 @@ THE SOFTWARE.
 
                 //---
 
-                var scale = settings.fov / ( settings.fov + entry.vectorPosition.z );
+                var scale = settings.fov / (settings.fov + entry.vectorPosition.z);
 
-                entry.vector2D.x = entry.vectorPosition.x * scale + center2D.x; 
+                entry.vector2D.x = entry.vectorPosition.x * scale + center2D.x;
                 entry.vector2D.y = entry.vectorPosition.y * scale + center2D.y;
-                
+
                 //---
 
-                if ( entry.diffX && entry.diffY ) {
+                if (entry.diffX && entry.diffY) {
 
                     entry.vector2D.x -= entry.diffX;
                     entry.vector2D.y -= entry.diffY;
@@ -471,18 +504,18 @@ THE SOFTWARE.
 
                 //---
 
-                entry.element.setAttribute( 'x', entry.vector2D.x );
-                entry.element.setAttribute( 'y', entry.vector2D.y );
+                entry.element.setAttribute('x', entry.vector2D.x);
+                entry.element.setAttribute('y', entry.vector2D.y);
 
                 //---
 
                 var opacity;
 
-                if ( mouseReact ) {
+                if (mouseReact) {
 
-                    opacity = ( radius - entry.vectorPosition.z ) / diameter;
+                    opacity = (radius - entry.vectorPosition.z) / diameter;
 
-                    if ( opacity < settings.opacityOut ) {
+                    if (opacity < settings.opacityOut) {
 
                         opacity = settings.opacityOut;
 
@@ -490,64 +523,64 @@ THE SOFTWARE.
 
                 } else {
 
-                    opacity = parseFloat( entry.element.getAttribute( 'opacity' ) );
+                    opacity = parseFloat(entry.element.getAttribute('opacity'));
 
-                    if ( entry.mouseOver ) {
+                    if (entry.mouseOver) {
 
-                        opacity += ( settings.opacityOver - opacity ) / settings.opacitySpeed;
+                        opacity += (settings.opacityOver - opacity) / settings.opacitySpeed;
 
                     } else {
 
-                        opacity += ( settings.opacityOut - opacity ) / settings.opacitySpeed;
+                        opacity += (settings.opacityOut - opacity) / settings.opacitySpeed;
 
                     }
 
                 }
 
-                entry.element.setAttribute( 'opacity', opacity * (1 - ((radius_factor - 1) / (settings["animatingRadiusLimit"] - 1))) );
-                
+                entry.element.setAttribute('opacity', opacity * (1 - ((radius_factor - 1) / (settings["animatingRadiusLimit"] - 1))));
+
             }
 
             //---
 
-            entryHolder = entryHolder.sort( function( a, b ) {
+            entryHolder = entryHolder.sort(function (a, b) {
 
-                return ( b.vectorPosition.z - a.vectorPosition.z );
+                return (b.vectorPosition.z - a.vectorPosition.z);
 
-            } );
+            });
 
         };
 
         //---
 
-        window.requestAnimFrame = ( function() {
+        window.requestAnimFrame = (function () {
 
-            return  window.requestAnimationFrame       ||
-                    window.webkitRequestAnimationFrame ||
-                    window.mozRequestAnimationFrame    ||
-                    function( callback ) {
-                        return window.setTimeout( callback, 1000 / 60 );
-                    };
+            return window.requestAnimationFrame ||
+                window.webkitRequestAnimationFrame ||
+                window.mozRequestAnimationFrame ||
+                function (callback) {
+                    return window.setTimeout(callback, 1000 / 60);
+                };
 
-        } )();
+        })();
 
-        window.cancelAnimFrame = ( function() {
+        window.cancelAnimFrame = (function () {
 
-            if(window.requestAnimationFrame){
+            if (window.requestAnimationFrame) {
                 return window.cancelAnimationFrame;
-            } else if(window.webkitRequestAnimationFrame){
+            } else if (window.webkitRequestAnimationFrame) {
                 return window.webkitCancelAnimationFrame;
-            } else if(window.mozRequestAnimationFrame){
+            } else if (window.mozRequestAnimationFrame) {
                 return window.mozCancelAnimationFrame;
             }
             return window.clearTimeout;
 
-        } )();
+        })();
 
-            
+
         function animloop() {
 
-            animFrameId = requestAnimFrame( animloop );
+            animFrameId = requestAnimFrame(animloop);
 
             render();
 
@@ -555,35 +588,35 @@ THE SOFTWARE.
 
         //---
 
-        function mouseOverHandler( event ) {
+        function mouseOverHandler(event) {
 
             mouseReact = false;
 
             //---
 
-            var entry = getEntryByElement( event.target );
+            var entry = getEntryByElement(event.target);
 
-            highlightEntry( entry );
+            highlightEntry(entry);
 
-            if ( entry.tooltip ) {
+            if (entry.tooltip) {
 
-                showTooltip( entry );
+                showTooltip(entry, event);
 
             }
 
         };
 
-        function mouseOutHandler( event ) {
+        function mouseOutHandler(event) {
 
             mouseReact = true;
 
             //---
 
-            var entry = getEntryByElement( event.target );
+            var entry = getEntryByElement(event.target);
 
-            if ( entry.tooltip ) {
+            if (entry.tooltip) {
 
-                hideTooltip( entry );
+                hideTooltip(entry);
 
             }
 
@@ -591,20 +624,20 @@ THE SOFTWARE.
 
         //---
 
-        function mouseMoveHandler( event ) {
+        function mouseMoveHandler(event) {
 
-            mousePos = getMousePos( svg, event );
+            mousePos = getMousePos(svg, event);
 
         };
 
-        function getMousePos( svg, event ) {
+        function getMousePos(svg, event) {
 
             var rect = svg.getBoundingClientRect();
 
-            return { 
+            return {
 
-                x: event.clientX - rect.left, 
-                y: event.clientY - rect.top 
+                x: event.clientX - rect.left,
+                y: event.clientY - rect.top
 
             };
 
@@ -612,22 +645,22 @@ THE SOFTWARE.
 
         //---
 
-        function resizeHandler( event ) {
+        function resizeHandler(event) {
 
             reInit();
 
         };
 
-        function setRadiusFactor( factor ){
-            radius_factor = Math.min(Math.max(factor,1),settings["animatingRadiusLimit"]);
+        function setRadiusFactor(factor) {
+            radius_factor = Math.min(Math.max(factor, 1), settings["animatingRadiusLimit"]);
             reInit();
         };
 
-        function resetRadiusFactor(){
+        function resetRadiusFactor() {
             setRadiusFactor(1);
         };
 
-        function setEntries( entries ){
+        function setEntries(entries) {
             destroy();
             settings["entries"] = entries;
             init();
@@ -635,47 +668,47 @@ THE SOFTWARE.
 
         var animOut_cb = false, animIn_cb = false, animating = false;
 
-        function _animOut(){
-            if( animating = radius_factor < settings["animatingRadiusLimit"] ){
-                setRadiusFactor( radius_factor + settings["animatingSpeed"] );
-                requestAnimFrame( _animOut );
+        function _animOut() {
+            if (animating = radius_factor < settings["animatingRadiusLimit"]) {
+                setRadiusFactor(radius_factor + settings["animatingSpeed"]);
+                requestAnimFrame(_animOut);
             } else {
-                if(typeof animOut_cb === 'function'){
+                if (typeof animOut_cb === 'function') {
                     animOut_cb();
                     animOut_cb = false;
                 }
             }
         };
 
-        function _animIn(){
-            if( animating = radius_factor > 1 ){
-                setRadiusFactor( radius_factor - settings["animatingSpeed"] );
-                requestAnimFrame( _animIn );
+        function _animIn() {
+            if (animating = radius_factor > 1) {
+                setRadiusFactor(radius_factor - settings["animatingSpeed"]);
+                requestAnimFrame(_animIn);
             } else {
-                if(typeof animIn_cb === 'function'){
+                if (typeof animIn_cb === 'function') {
                     animIn_cb();
                     animIn_cb = false;
                 }
             }
-            
+
         };
 
-        function animOut( callback ){
-            if(!animating){
+        function animOut(callback) {
+            if (!animating) {
                 radius_factor = 1;
                 animOut_cb = callback;
                 _animOut();
             }
         };
 
-        function animIn( callback ){
-            if(!animating){
+        function animIn(callback) {
+            if (!animating) {
                 radius_factor = settings["animatingRadiusLimit"];
                 animIn_cb = callback;
                 _animIn();
             }
         };
-        
+
         //---
 
         init();
@@ -688,43 +721,43 @@ THE SOFTWARE.
     };
 
     window.SVG3DTagCloud = SVG3DTagCloud;
+    module.exports = SVG3DTagCloud;
+}());
 
-} () );
+if (typeof jQuery !== 'undefined') {
 
-if ( typeof jQuery !== 'undefined' ) {
+    (function ($) {
 
-    ( function( $ ) {
-
-        $.fn.svg3DTagCloud = function( params ) {
+        $.fn.svg3DTagCloud = function (params) {
 
             var args = arguments;
 
-            return this.each( function() {
+            return this.each(function () {
 
-                if ( !$.data( this, 'plugin_SVG3DTagCloud' ) ) {
+                if (!$.data(this, 'plugin_SVG3DTagCloud')) {
 
-                    $.data( this, 'plugin_SVG3DTagCloud', new SVG3DTagCloud( this, params ) );
+                    $.data(this, 'plugin_SVG3DTagCloud', new SVG3DTagCloud(this, params));
 
                 } else {
 
-                    var plugin = $.data( this, 'plugin_SVG3DTagCloud' );
+                    var plugin = $.data(this, 'plugin_SVG3DTagCloud');
 
-                    if ( plugin[ params ] ) {
+                    if (plugin[params]) {
 
-                        plugin[ params ].apply( this, Array.prototype.slice.call( args, 1 ) );
+                        plugin[params].apply(this, Array.prototype.slice.call(args, 1));
 
                     } else {
 
-                        $.error( 'Method ' +  params + ' does not exist on jQuery.svg3DTagCloud' );
+                        $.error('Method ' + params + ' does not exist on jQuery.svg3DTagCloud');
 
                     }
 
                 }
 
-            } );
+            });
 
         };
-        
-    } ( jQuery ) );
+
+    }(jQuery));
 
 }
