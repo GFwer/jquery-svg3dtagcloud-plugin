@@ -1,8 +1,8 @@
 {
   "name": "3d-word-cloud",
   "description": "SVG 3D Tag Cloud jQuery plugin",
-  "version": "1.0.1",
-  "main": "js/jquery.svg3dtagcloud.js",
+  "version": "1.0.2",
+  "main": "js/jquery.svg3dtagcloud.min.js",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/Maximoo/jquery-svg3dtagcloud-plugin.git"
