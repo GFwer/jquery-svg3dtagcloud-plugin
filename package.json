@@ -1,7 +1,7 @@
 {
   "name": "3d-word-cloud",
   "description": "SVG 3D Tag Cloud jQuery plugin",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "main": "js/jquery.svg3dtagcloud.min.js",
   "repository": {
     "type": "git",

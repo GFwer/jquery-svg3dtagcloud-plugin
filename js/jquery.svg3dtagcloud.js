@@ -366,8 +366,12 @@ THE SOFTWARE.
             tooltip.style.color = settings.tooltipFontColor;
             tooltip.style.fontFamily = settings.tooltipFontFamily;
             tooltip.style.fontSize = settings.tooltipFontSize + 'px';
+            tooltip.style.position = 'absolute';
+            tooltip.style.top = element.clientHeight;
+            tooltip.style.left = 0;
             tooltip.style.fontWeight = settings.tooltipFontWeight;
             tooltip.style.fontStyle = settings.tooltipFontStyle;
+            tooltip.style.width = '200px';
             tooltip.style.fontStretch = settings.tooltipFontStretch;
             tooltip.style.textAnchor = settings.tooltipTextAnchor;
             tooltip.textContent = '';
@@ -421,6 +425,7 @@ THE SOFTWARE.
         function showTooltip(entry, event) {
 
             if (entry.tooltip) {
+                tooltip.style.width = 'auto'
                 var width = element.clientWidth,
                     height = element.clientHeight,
                     tooltipWidth = tooltip.clientWidth,
@@ -431,11 +436,12 @@ THE SOFTWARE.
                 // tooltip.setAttribute('x', entry.vector2D.x - settings.tooltipDiffX);
                 // tooltip.setAttribute('y', entry.vector2D.y - settings.tooltipDiffY);
                 // var tooltip = document.getElementById('3d-word-tooltip');
-                tooltip.style.position = 'absolute';
-                if (tooltipWidth > width - event.offsetX || width - event.offsetX < tooltipWidth - event.offsetX) {
+
+                if ((tooltipWidth > width - event.offsetX || width - event.offsetX < tooltipWidth - event.offsetX)) {
                     offsetOver = - tooltipWidth / 2
                 }
-                tooltip.style.left = event.offsetX + offsetOver - tooltipWidth / 2 + offsetX + 'px';
+                tooltip.style.position = 'absolute';
+                tooltip.style.left = event.offsetX + offsetOver + offsetX + - tooltipWidth / 2 + 'px';
                 tooltip.style.top = event.offsetY + 15 + offsetY + 'px';
                 // tooltip.style.maxWidth = '200px';
                 tooltip.style.borderRadius = '5px';
@@ -443,7 +449,7 @@ THE SOFTWARE.
                 tooltip.style.zIndex = 999;
                 tooltip.style.opacity = 0.8;
                 tooltip.style.background = '#1d1e28'
-                tooltip.style.transition = 'all ease .3s'
+                tooltip.style.transition = 'all ease .1s'
                 tooltip.innerHTML = formatter(entry);
 
                 // console.log()
