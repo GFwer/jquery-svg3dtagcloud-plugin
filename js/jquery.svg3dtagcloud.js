@@ -447,8 +447,8 @@ THE SOFTWARE.
                 tooltip.style.borderRadius = '5px';
                 tooltip.style.padding = '5px 8px'
                 tooltip.style.zIndex = 999;
-                tooltip.style.opacity = 0.8;
-                tooltip.style.background = '#1d1e28'
+                tooltip.style.opacity = 0.9;
+                tooltip.style.background = 'rgb(3,6,18)'
                 tooltip.style.transition = 'all ease .1s'
                 tooltip.innerHTML = formatter(entry);
 
