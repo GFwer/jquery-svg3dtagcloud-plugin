@@ -55,6 +55,7 @@ THE SOFTWARE.
             tooltipFontStretch: 'normal',//wider, narrower, ultra-condensed, extra-condensed, condensed, semi-condensed, semi-expanded, expanded, extra-expanded, ultra-expanded
             tooltipFontToUpperCase: false,
             tooltipTextAnchor: 'left',
+            tooltipPosition: '',
             tooltipDiffX: 0,
             tooltipDiffY: 10,
             animatingSpeed: 0.01,
@@ -423,27 +424,42 @@ THE SOFTWARE.
 
         var formatter = settings.formatter;
         function showTooltip(entry, event) {
-
             if (entry.tooltip) {
                 tooltip.style.width = 'auto'
                 var width = element.clientWidth,
                     height = element.clientHeight,
                     tooltipWidth = tooltip.clientWidth,
+                    tooltipHeight = tooltip.clientHeight,
                     offsetOver = 0,
                     offsetX = 0.1 || settings.tooltipOffsetX,
                     offsetY = 0.1 || settings.tooltipOffsetY;
                 tooltip.style.visibility = 'visible'
-                // tooltip.setAttribute('x', entry.vector2D.x - settings.tooltipDiffX);
-                // tooltip.setAttribute('y', entry.vector2D.y - settings.tooltipDiffY);
-                // var tooltip = document.getElementById('3d-word-tooltip');
-
-                if ((tooltipWidth > width - event.offsetX || width - event.offsetX < tooltipWidth - event.offsetX)) {
-                    offsetOver = - tooltipWidth / 2
+                switch (settings.tooltipPosition) {
+                    case 'top-left':
+                        tooltip.style.top = event.offsetY - 15 + offsetY - tooltipHeight + 'px';
+                        tooltip.style.left = event.offsetX - tooltipWidth + 'px';
+                        break;
+                    case 'top-right':
+                        tooltip.style.top = event.offsetY - 15 + offsetY - tooltipHeight + 'px';
+                        tooltip.style.left = event.offsetX + 'px';
+                        break;
+                    case 'bottom-left':
+                        tooltip.style.top = event.offsetY - 15 + offsetY + tooltipHeight + 'px';
+                        tooltip.style.left = event.offsetX - tooltipWidth + 'px';
+                        break;
+                    case 'bottom-right':
+                        tooltip.style.top = event.offsetY - 15 + offsetY + tooltipHeight + 'px';
+                        tooltip.style.left = event.offsetX + 'px';
+                        break;
+                    default:
+                        if ((tooltipWidth > width - event.offsetX || width - event.offsetX < tooltipWidth - event.offsetX)) {
+                            offsetOver = - tooltipWidth / 2
+                        }
+                        tooltip.style.left = event.offsetX + offsetOver + offsetX + - tooltipWidth / 2 + 'px';
+                        tooltip.style.top = event.offsetY - 15 + offsetY - tooltipHeight + 'px';
+                        break;
                 }
                 tooltip.style.position = 'absolute';
-                tooltip.style.left = event.offsetX + offsetOver + offsetX + - tooltipWidth / 2 + 'px';
-                tooltip.style.top = event.offsetY + 15 + offsetY + 'px';
-                // tooltip.style.maxWidth = '200px';
                 tooltip.style.borderRadius = '5px';
                 tooltip.style.padding = '5px 8px'
                 tooltip.style.zIndex = 999;
@@ -451,11 +467,6 @@ THE SOFTWARE.
                 tooltip.style.background = 'rgb(3,6,18)'
                 tooltip.style.transition = 'all ease .1s'
                 tooltip.innerHTML = formatter(entry);
-
-                // console.log()
-                // tooltip.setAttribute('transform', 'translate(' + (settings.tooltipFontSize * tooltip.textContent.length / -4) + ',-5)')
-                // tooltip.setAttribute('opacity', 1.0);
-
             }
 
         };
