@@ -43,6 +43,7 @@ THE SOFTWARE.
             fontColor: '#fff',
             linkClass: '',
             hover: false,
+            click: false,
             fontWeight: 'normal',//bold
             fontStyle: 'normal',//italic 
             fontStretch: 'normal',//wider, narrower, ultra-condensed, extra-condensed, condensed, semi-condensed, semi-expanded, expanded, extra-expanded, ultra-expanded
@@ -62,6 +63,9 @@ THE SOFTWARE.
             animatingRadiusLimit: 1.3,
             formatter: function (label) {
                 return label.tooltipLabel
+            },
+            onClick: function (entry, event) {
+                console.log(entry);
             }
 
         };
@@ -292,6 +296,9 @@ THE SOFTWARE.
                 entry.link.addEventListener('mouseover', mouseOverHandler, true);
                 entry.link.addEventListener('mouseout', mouseOutHandler, true);
             }
+            if (settings.click) {
+                entry.link.addEventListener('click', mouseClickHandler, true)
+            }
 
             entry.link.setAttribute('class', settings.linkClass)
 
@@ -478,6 +485,10 @@ THE SOFTWARE.
 
         };
 
+        var onClick = settings.onClick
+        function entryClick(entry, event) {
+            onClick(entry, event)
+        }
         //---
 
         function render() {
@@ -613,7 +624,14 @@ THE SOFTWARE.
         };
 
         //---
+        function mouseClickHandler(event) {
+            var entry = getEntryByElement(event.target);
+            if (entry) {
 
+                entryClick(entry, event);
+
+            }
+        }
         function mouseOverHandler(event) {
 
             mouseReact = false;
