@@ -705,9 +705,13 @@ THE SOFTWARE.
         };
 
         function setEntries(entries) {
-            destroy();
-            settings["entries"] = entries;
-            init();
+            try {
+                destroy();
+                settings["entries"] = entries;
+                init();
+            } catch (e) {
+
+            }
         };
 
         var animOut_cb = false, animIn_cb = false, animating = false;
@@ -754,8 +758,12 @@ THE SOFTWARE.
         };
 
         //---
+        try {
+            init();
+        } catch (e) {
 
-        init();
+        }
+
 
         //API
         this.destroy = destroy;
