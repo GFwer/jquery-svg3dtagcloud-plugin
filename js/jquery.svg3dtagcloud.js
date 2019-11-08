@@ -290,7 +290,7 @@ THE SOFTWARE.
             }
 
             entry.link = document.createElementNS(svgNS, 'a');
-            entry.link.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', entryObj.url);
+            // entry.link.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', entryObj.url);
             entry.link.setAttribute('target', entryObj.target);
             if (settings.hover === true) {
                 entry.link.addEventListener('mouseover', mouseOverHandler, true);
